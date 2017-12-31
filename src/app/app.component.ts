@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import { element } from 'protractor';
-import { NewsService } from './core/news.service';
+import { NewsService } from './core/services/news.service';
 
 const COMMAND_PROMPT_PREFIX = '>> ';
 enum Command {
