@@ -1,3 +1,5 @@
+# TODO
+* creatures should die after life expectancy reached, track age distributions
 # Dude
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.3.

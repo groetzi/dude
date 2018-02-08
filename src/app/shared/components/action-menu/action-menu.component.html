@@ -1,7 +1,11 @@
 <div class="app-am">
     <div class="app-am-stats">
-        <div>Creatures: {{getNumCreatures()}}</div>
-        <div>Reproduction rate: {{getReproRate()}}</div>
+        <table>
+            <tr *ngFor="let stat of getStats()">
+                <td>{{stat.name}}</td>
+                <td>{{stat.value}}</td>
+            </tr>
+        </table>
     </div>
     <button class="app-button-round"
             (click)="spawnCreature()">Spawn creature</button>

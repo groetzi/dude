@@ -7,18 +7,24 @@ import { UniverseService } from '../../../core/services/universe.service';
     styleUrls: ['./action-menu.component.css']
 })
 export class ActionMenuComponent implements OnInit {
-    constructor(private universe: UniverseService) {}
+    constructor(private universe: UniverseService) { }
 
-    ngOnInit() {}
+    ngOnInit() { }
 
     spawnCreature() {
         this.universe.spawnCreature();
     }
 
-    getNumCreatures() {
-        return this.universe.getState().creatures;
-    }
-    getReproRate() {
-        return this.universe.getState().reproductionRate;
+    getStats() {
+        return [{
+            name: 'Creatures',
+            value: this.universe.getState().creatures
+        }, {
+            name: 'Reproduction rate',
+            value: this.universe.getState().reproductionRate
+        }, {
+            name: 'Current year',
+            value: this.universe.getState().currentYear
+        }];
     }
 }
