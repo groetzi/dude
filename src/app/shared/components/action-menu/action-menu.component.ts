@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { UniverseService } from '../../../core/services/universe.service';
 import { Observable } from 'rxjs/Observable';
+import { IChartConfig } from '../line-chart/line-chart.component';
 
 @Component({
     selector: 'app-action-menu',
@@ -10,9 +11,10 @@ import { Observable } from 'rxjs/Observable';
 export class ActionMenuComponent implements OnInit {
     constructor(private universe: UniverseService, private cd: ChangeDetectorRef) {}
 
-    chartData = [];
+    chartConfig: IChartConfig;
 
     ngOnInit() {
+        // TODO: make state observable
         Observable.timer(0, 1000).subscribe(() => this.updateChartData());
     }
 
@@ -46,14 +48,19 @@ export class ActionMenuComponent implements OnInit {
     }
 
     private updateChartData() {
-        this.chartData = [
-            {
-                name: 'Age',
-                series: this.universe.getState().ageDistribution.map((val, ind) => ({
-                    name: ind,
-                    value: val
-                }))
-            }
-        ];
+        // TODO: play around with immutablejs
+        this.chartConfig = {
+            data: [
+                {
+                    name: 'Age',
+                    series: this.universe.getState().ageDistribution.map((val, ind) => ({
+                        name: ind,
+                        value: val
+                    }))
+                }
+            ],
+            xAxisLabel: 'Age',
+            yAxisLabel: 'Population'
+        };
     }
 }
