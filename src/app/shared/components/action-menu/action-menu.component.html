@@ -1,4 +1,6 @@
 <div class="app-am">
+    <button class="app-button-round"
+            (click)="spawnCreature()">Spawn creature</button>
     <div class="app-am-stats">
         <table>
             <tr *ngFor="let stat of getStats()">
@@ -7,22 +9,5 @@
             </tr>
         </table>
     </div>
-    <div>
-        <ngx-charts-line-chart [view]="view"
-                               [scheme]="colorScheme"
-                               [results]="chartData"
-                               [gradient]="gradient"
-                               [xAxis]="showXAxis"
-                               [yAxis]="showYAxis"
-                               [legend]="showLegend"
-                               [showXAxisLabel]="showXAxisLabel"
-                               [showYAxisLabel]="showYAxisLabel"
-                               [xAxisLabel]="xAxisLabel"
-                               [yAxisLabel]="yAxisLabel"
-                               [autoScale]="autoScale"
-                               (select)="onSelect($event)">
-        </ngx-charts-line-chart>
-    </div>
-    <button class="app-button-round"
-            (click)="spawnCreature()">Spawn creature</button>
+    <app-line-chart [chartData]="chartData"></app-line-chart>
 </div>

@@ -10,21 +10,7 @@ import { Observable } from 'rxjs/Observable';
 export class ActionMenuComponent implements OnInit {
     constructor(private universe: UniverseService, private cd: ChangeDetectorRef) {}
 
-    // chart options
     chartData = [];
-    view: any[] = [500, 200];
-    showXAxis = true;
-    showYAxis = true;
-    gradient = false;
-    showLegend = false;
-    showXAxisLabel = true;
-    xAxisLabel = 'Age';
-    showYAxisLabel = true;
-    yAxisLabel = 'Population';
-
-    colorScheme = {
-        domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
-    };
 
     ngOnInit() {
         Observable.timer(0, 1000).subscribe(() => this.updateChartData());

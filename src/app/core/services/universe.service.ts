@@ -4,82 +4,41 @@ import 'rxjs/add/observable/timer';
 import 'rxjs/add/operator/bufferCount';
 import gaussian = require('gaussian');
 import { MessagesService } from './messages.service';
+import { IUniverseState } from '../models/universe-state.model';
 
+/**
+ * Milliseconds between universe ticks.
+ * Each tick triggers a universe evolution by applying e.g. creature reproduction or mortality distributions.
+ */
 const TICKER = 100;
+/** Number of creatures at the beginning. */
 const INITIAL_CREATURE_COUNT = 100;
-const TICKS_PER_YEAR = 10;
+/** Average life expectancy for new creatures. */
 const AVERAGE_LIFE_EXPECTANCY = 20;
-const DEFAULT_MORTALITY_DISTRIBUTION = gaussian(AVERAGE_LIFE_EXPECTANCY, 6) as IGaussian;
-const PREGNANCY_DISTRIBUTION = gaussian(AVERAGE_LIFE_EXPECTANCY / 2, 5) as IGaussian;
-const CHILD_MORTALITY_DISTRIBUTION = gaussian(0, 50) as IGaussian;
 
-// [0, 1, 10, 20].forEach(val => console.log(val + ': ' + CHILD_MORTALITY_DISTRIBUTION.pdf(val)));
-
-/** API of https://github.com/errcw/gaussian */
-interface IGaussian {
-    /** the mean (μ) of the distribution */
-    mean: number;
-    /**the variance (σ^2) of the distribution */
-    variance: number;
-    /** the standard deviation */
-    standardDeviation: number;
-    /** the probability density function, which describes the probability of a random variable taking on the value x */
-    pdf(x): number;
-    /** the cumulative distribution function, which describes the probability of a random variable falling in the interval (−∞, x] */
-    cdf(x): number;
-    /** the percent point function, the inverse of cdf */
-    ppf(x): number;
-
-    //     mul(d): returns the product distribution of this and the given distribution; equivalent to scale(d) when d is a constant
-    // div(d): returns the quotient distribution of this and the given distribution; equivalent to scale(1/d) when d is a constant
-    /** returns the result of adding this and the given distribution's means and variances */
-    add(d): IGaussian;
-    // sub(d): returns the result of subtracting this and the given distribution's means and variances
-    /** returns the result of scaling this distribution by the given constant */
-    scale(c): IGaussian;
-}
-
-enum CreatureType {
-    Human,
-    Animal
-}
-
-interface IState {
-    reproductionRate: number;
-    creatures: number;
-    /** kill creatures according to Gaussian around average life expectancy */
-    defaultMortalityDistribution: IGaussian;
-    /** child mortality distribution */
-    childMortalityDistribution: IGaussian;
-    pregnancyDistribution: IGaussian;
-    ticksPerYear: number;
-    currentYear: number;
-    /** Each entry in the list represents the number of creatures that have the age defined by the list index. */
-    ageDistribution: number[];
-}
+const DEFAULT_STATE: IUniverseState = {
+    creatures: INITIAL_CREATURE_COUNT,
+    reproductionRate: 0.5,
+    defaultMortalityDistribution: gaussian(AVERAGE_LIFE_EXPECTANCY, 6) as IGaussian,
+    childMortalityDistribution: gaussian(0, 50) as IGaussian,
+    pregnancyDistribution: gaussian(AVERAGE_LIFE_EXPECTANCY / 2, 5) as IGaussian,
+    ticksPerYear: 10,
+    currentYear: 0,
+    ageDistribution: [INITIAL_CREATURE_COUNT]
+};
 
 @Injectable()
 export class UniverseService {
     private ticker = Observable.timer(0, TICKER);
     constructor(private messages: MessagesService) {
         this.ticker.subscribe(() => {
-            // this.spawnCreatures(Math.round(this.state.creatures / 2 * this.state.reproductionRate));
             this.reproduceCreatures();
             this.killCreatures();
         });
         this.ticker.bufferCount(this.state.ticksPerYear).subscribe(() => this.incYear());
     }
 
-    private state: IState = {
-        creatures: INITIAL_CREATURE_COUNT,
-        reproductionRate: 0.5,
-        defaultMortalityDistribution: DEFAULT_MORTALITY_DISTRIBUTION,
-        childMortalityDistribution: CHILD_MORTALITY_DISTRIBUTION,
-        pregnancyDistribution: PREGNANCY_DISTRIBUTION,
-        ticksPerYear: TICKS_PER_YEAR,
-        currentYear: 0,
-        ageDistribution: [INITIAL_CREATURE_COUNT]
-    };
+    private state = DEFAULT_STATE;
 
     spawnCreatures(amount = 1) {
         this.state.ageDistribution[0] += amount;
@@ -95,7 +54,7 @@ export class UniverseService {
             this.state.ageDistribution
                 .map((val, ind) => {
                     // num pregnancies in age group
-                    const pregs = Math.round(val / 2 * PREGNANCY_DISTRIBUTION.pdf(ind));
+                    const pregs = Math.round(val / 2 * this.state.pregnancyDistribution.pdf(ind));
                     if (pregs > 0) {
                         this.messages.info(`age group ${ind} reproduced ${pregs}`);
                     }

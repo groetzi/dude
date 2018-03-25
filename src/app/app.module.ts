@@ -12,9 +12,10 @@ import { UniverseService } from './core/services/universe.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { MessagesService } from './core/services/messages.service';
+import { LineChartComponent } from './shared/components/line-chart/line-chart.component';
 
 @NgModule({
-    declarations: [AppComponent, ActionMenuComponent],
+    declarations: [AppComponent, ActionMenuComponent, LineChartComponent],
     imports: [
         BrowserModule,
         FormsModule,
