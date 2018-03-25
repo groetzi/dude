@@ -13,6 +13,7 @@ export class ActionMenuComponent implements OnInit {
 
     charts: {
         ageDistribution?: IChartConfig;
+        pregnancyDistribution?: IChartConfig;
         defaultMortalityDistribution?: IChartConfig;
         childMortalityDistribution?: IChartConfig;
     } = {};
@@ -49,8 +50,17 @@ export class ActionMenuComponent implements OnInit {
 
     private updateChartData() {
         this.charts.ageDistribution = this.getAgeDistributionChart();
+        this.charts.pregnancyDistribution = this.getPregnancyDistributionChart();
         this.charts.defaultMortalityDistribution = this.getDefaultMortalityDistributionChart();
         this.charts.childMortalityDistribution = this.getChildMortalityDistributionChart();
+    }
+
+    private getPregnancyDistributionChart() {
+        return this.ageDistToChart({
+            getValue: age => this.universe.getState().pregnancyDistribution.pdf(age),
+            seriesName: 'Age',
+            yAxisLabel: 'Probability of pregnancy'
+        });
     }
 
     private getAgeDistributionChart() {
