@@ -9,5 +9,15 @@
             </tr>
         </table>
     </div>
-    <app-line-chart [chartConfig]="chartConfig"></app-line-chart>
+    <div>
+        <h3>Age distribution</h3>
+        <app-line-chart [chartConfig]="charts.ageDistribution"></app-line-chart>
+    </div>
+    <div>
+        <h3>Causes of death</h3>
+        <h4>Default mortality due to age</h4>
+        <app-line-chart [chartConfig]="charts.defaultMortalityDistribution"></app-line-chart>
+        <h4>Child mortality</h4>
+        <app-line-chart [chartConfig]="charts.childMortalityDistribution"></app-line-chart>
+    </div>
 </div>

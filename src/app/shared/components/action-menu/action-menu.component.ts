@@ -11,10 +11,14 @@ import { IChartConfig } from '../line-chart/line-chart.component';
 export class ActionMenuComponent implements OnInit {
     constructor(private universe: UniverseService, private cd: ChangeDetectorRef) {}
 
-    chartConfig: IChartConfig;
+    charts: {
+        ageDistribution?: IChartConfig;
+        defaultMortalityDistribution?: IChartConfig;
+        childMortalityDistribution?: IChartConfig;
+    } = {};
 
     ngOnInit() {
-        // TODO: make state observable
+        // TODO: make universe state observable and introduce some kind of buffer e.g. update each 10 ticks or so (or each year)?
         Observable.timer(0, 1000).subscribe(() => this.updateChartData());
     }
 
@@ -48,19 +52,57 @@ export class ActionMenuComponent implements OnInit {
     }
 
     private updateChartData() {
-        // TODO: play around with immutablejs
-        this.chartConfig = {
+        this.charts.ageDistribution = this.getAgeDistributionChart();
+        this.charts.defaultMortalityDistribution = this.getDefaultMortalityDistributionChart();
+        this.charts.childMortalityDistribution = this.getChildMortalityDistributionChart();
+    }
+
+    private getAgeDistributionChart() {
+        return this.ageDistToChart({
+            getValue: age => this.universe.getState().ageDistribution[age] || 0,
+            seriesName: 'Age',
+            yAxisLabel: 'Population'
+        });
+    }
+
+    private getDefaultMortalityDistributionChart() {
+        return this.ageDistToChart({
+            getValue: age => this.universe.getState().defaultMortalityDistribution.cdf(age),
+            seriesName: 'Default mortality',
+            yAxisLabel: 'Probability of being dead'
+        });
+    }
+
+    private getChildMortalityDistributionChart() {
+        return this.ageDistToChart({
+            getValue: age => this.universe.getState().childMortalityDistribution.pdf(age),
+            seriesName: 'Child mortality',
+            yAxisLabel: 'Probability of dying'
+        });
+    }
+
+    private ageDistToChart(options: { getValue: (age: number) => number; seriesName: string; yAxisLabel: string }) {
+        const ages = this.getArray0To(this.universe.getState().ageDistribution.length + 10);
+        return {
             data: [
                 {
-                    name: 'Age',
-                    series: this.universe.getState().ageDistribution.map((val, ind) => ({
-                        name: ind,
-                        value: val
+                    name: options.seriesName,
+                    series: ages.map((num, age) => ({
+                        name: age,
+                        value: Math.round(options.getValue(age) * 100) / 100
                     }))
                 }
             ],
             xAxisLabel: 'Age',
-            yAxisLabel: 'Population'
+            yAxisLabel: options.yAxisLabel
         };
+    }
+
+    private getArray0To(max: number) {
+        const a = [];
+        for (let i = 0; i <= max; i++) {
+            a.push(i);
+        }
+        return a;
     }
 }
