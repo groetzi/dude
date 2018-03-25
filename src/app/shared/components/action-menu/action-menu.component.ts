@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { UniverseService } from '../../../core/services/universe.service';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
     selector: 'app-action-menu',
@@ -7,24 +8,66 @@ import { UniverseService } from '../../../core/services/universe.service';
     styleUrls: ['./action-menu.component.css']
 })
 export class ActionMenuComponent implements OnInit {
-    constructor(private universe: UniverseService) { }
+    constructor(private universe: UniverseService, private cd: ChangeDetectorRef) {}
 
-    ngOnInit() { }
+    // chart options
+    chartData = [];
+    view: any[] = [500, 200];
+    showXAxis = true;
+    showYAxis = true;
+    gradient = false;
+    showLegend = false;
+    showXAxisLabel = true;
+    xAxisLabel = 'Age';
+    showYAxisLabel = true;
+    yAxisLabel = 'Population';
+
+    colorScheme = {
+        domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+    };
+
+    ngOnInit() {
+        Observable.timer(0, 1000).subscribe(() => this.updateChartData());
+    }
 
     spawnCreature() {
-        this.universe.spawnCreature();
+        this.universe.spawnCreatures();
     }
 
     getStats() {
-        return [{
-            name: 'Creatures',
-            value: this.universe.getState().creatures
-        }, {
-            name: 'Reproduction rate',
-            value: this.universe.getState().reproductionRate
-        }, {
-            name: 'Current year',
-            value: this.universe.getState().currentYear
-        }];
+        return [
+            {
+                name: 'Creatures',
+                value: this.universe.getState().creatures
+            },
+            {
+                name: 'Reproduction rate',
+                value: this.universe.getState().reproductionRate
+            },
+            {
+                name: 'Current year',
+                value: this.universe.getState().currentYear
+            },
+            {
+                name: 'Mean life expectancy',
+                value: this.universe.getState().defaultMortalityDistribution.mean
+            },
+            {
+                name: 'Mean pregnancy age',
+                value: this.universe.getState().pregnancyDistribution.mean
+            }
+        ];
+    }
+
+    private updateChartData() {
+        this.chartData = [
+            {
+                name: 'Age',
+                series: this.universe.getState().ageDistribution.map((val, ind) => ({
+                    name: ind,
+                    value: val
+                }))
+            }
+        ];
     }
 }
