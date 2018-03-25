@@ -1,5 +1,4 @@
 export interface IUniverseState {
-    reproductionRate: number;
     creatures: number;
     /** kill creatures according to Gaussian around average life expectancy */
     defaultMortalityDistribution: IGaussian;

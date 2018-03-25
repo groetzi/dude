@@ -33,10 +33,6 @@ export class ActionMenuComponent implements OnInit {
                 value: this.universe.getState().creatures
             },
             {
-                name: 'Reproduction rate',
-                value: this.universe.getState().reproductionRate
-            },
-            {
                 name: 'Current year',
                 value: this.universe.getState().currentYear
             },

@@ -18,7 +18,6 @@ const AVERAGE_LIFE_EXPECTANCY = 20;
 
 const DEFAULT_STATE: IUniverseState = {
     creatures: INITIAL_CREATURE_COUNT,
-    reproductionRate: 0.5,
     defaultMortalityDistribution: gaussian(AVERAGE_LIFE_EXPECTANCY, 6) as IGaussian,
     childMortalityDistribution: gaussian(0, 50) as IGaussian,
     pregnancyDistribution: gaussian(AVERAGE_LIFE_EXPECTANCY / 2, 5) as IGaussian,
